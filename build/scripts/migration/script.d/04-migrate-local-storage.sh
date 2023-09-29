@@ -56,7 +56,6 @@ __is_migration_needed() {
 
     __is_version_gt "${version2}" "${version1}"
 }
-
 __get_download_domain(){
     local region
     # Use ipconfig.io/country and https://ifconfig.io/country_code to get the country code
@@ -72,7 +71,6 @@ __get_download_domain(){
 }
 
 DOWNLOAD_DOMAIN=$(__get_download_domain)
-
 BUILD_PATH=$(dirname "${BASH_SOURCE[0]}")/../../..
 
 readonly BUILD_PATH
