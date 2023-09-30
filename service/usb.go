@@ -30,11 +30,11 @@ func (s *usbService) UpdateUSBAutoMount(state string) {
 
 func (s *usbService) ExecUSBAutoMountShell(state string) {
 	if state == "False" {
-		if _, err := command2.OnlyExec("source " + config.AppInfo.ShellPath + "/local-storage-helper.sh ;USB_Stop_Auto"); err != nil {
+		if _, err := command2.OnlyExec(". " + config.AppInfo.ShellPath + "/local-storage-helper.sh ;USB_Stop_Auto"); err != nil {
 			logger.Error("error when executing shell script to stop USB automount", zap.Error(err))
 		}
 	} else {
-		if _, err := command2.OnlyExec("source " + config.AppInfo.ShellPath + "/local-storage-helper.sh ;USB_Start_Auto"); err != nil {
+		if _, err := command2.OnlyExec(". " + config.AppInfo.ShellPath + "/local-storage-helper.sh ;USB_Start_Auto"); err != nil {
 			logger.Error("error when executing shell script to start USB automount", zap.Error(err))
 		}
 	}

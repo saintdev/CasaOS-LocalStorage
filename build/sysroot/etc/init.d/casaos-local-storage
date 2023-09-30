@@ -1,0 +1,14 @@
+#!/sbin/openrc-run
+
+: ${local_storage_config:=/etc/casaos/local-storage.conf}
+
+description="CasaOS Local Storage Service"
+command="/usr/bin/casaos-local-storage"
+command_args="-c $local_storage_config"
+required_files=$local_storage_config
+pidfile="/var/run/casaos/local-storage.pid"
+supervisor="supervise-daemon"
+
+depend() {
+	need casaos-message-bus casaos-gateway
+}

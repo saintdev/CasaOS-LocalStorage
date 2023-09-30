@@ -14,13 +14,13 @@ GetPlugInDisk() {
 #param 需要格式化的目录 /dev/sda1
 #param 格式
 FormatDisk() {
-  if [ "$2" == "fat32" ]; then
+  if [ "$2" = "fat32" ]; then
     mkfs.vfat -F 32 $1
-  elif [ "$2" == "ntfs" ]; then
+  elif [ "$2" = "ntfs" ]; then
     mkfs.ntfs $1
-  elif [ "$2" == "ext4" ]; then
+  elif [ "$2" = "ext4" ]; then
     mkfs.ext4 -m 1 -F $1
-  elif [ "$2" == "exfat" ]; then
+  elif [ "$2" = "exfat" ]; then
     mkfs.exfat $1
   else
     mkfs.ext4 -m 1 -F $1
@@ -32,7 +32,7 @@ UMountPointAndRemoveDir() {
   set -e
   DEVICE=$1
   MOUNT_POINT=$(mount | grep ${DEVICE} | awk '{ print $3 }')
-  if [[ -z ${MOUNT_POINT} ]]; then
+  if [ -z ${MOUNT_POINT} ]; then
     echo "Warning: ${DEVICE} is not mounted"
   else
     umount -lf ${DEVICE}
@@ -86,7 +86,7 @@ do_mount() {
   LABEL=$2
   if grep -q " ${LABEL} " /etc/mtab; then
     # Already in use, make a unique one
-    LABEL+="-${DEVBASE}"
+    LABEL="${LABEL}-${DEVBASE}"
   fi
   DEV_LABEL="${LABEL}"
 
@@ -131,7 +131,7 @@ do_umount() {
   DEVICE="${DEVBASE}"
   MOUNT_POINT=$(mount | grep ${DEVICE} | awk '{ print $3 }')
 
-  if [[ -z ${MOUNT_POINT} ]]; then
+  if [ -z "${MOUNT_POINT}" ]; then
     echo "Warning: ${DEVICE} is not mounted"
   else
     /bin/kill -9 $(lsof ${MOUNT_POINT})
@@ -140,25 +140,29 @@ do_umount() {
     if [ "`ls -A ${MOUNT_POINT}`" = "" ]; then
       /bin/rm -fr "${MOUNT_POINT}"
     fi
-    
+
     sed -i.bak "\@${MOUNT_POINT}@d" /var/log/usb-mount.track
   fi
 
 }
 
+Already_Root() {
+  test "$(id -u)" -eq 0
+}
+
 USB_Start_Auto() {
-  ((EUID)) && sudo_cmd="sudo"
+  Already_Root || sudo_cmd="sudo"
   $sudo_cmd systemctl enable devmon@devmon
   $sudo_cmd systemctl start devmon@devmon
 }
 
 USB_Stop_Auto() {
-  ((EUID)) && sudo_cmd="sudo"
+  Already_Root || sudo_cmd="sudo"
   $sudo_cmd systemctl stop devmon@devmon
   $sudo_cmd systemctl disable devmon@devmon
   $sudo_cmd udevil clean
 }
 
-GetDeviceTree(){  
+GetDeviceTree(){
   cat /proc/device-tree/model
 }
