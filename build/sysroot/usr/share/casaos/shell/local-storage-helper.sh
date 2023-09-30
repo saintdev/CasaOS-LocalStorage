@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 UDEVILUmount(){
   $sudo_cmd udevil umount -f $1
